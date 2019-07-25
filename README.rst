@@ -23,6 +23,7 @@ Please follow the steps provided to Install "Easy Install" in the link above and
 
   1. To install Informix Alchemy from source
     Standard Python setup should be used::
+        python setup.py build
         python setup.py install
 
 Connecting
