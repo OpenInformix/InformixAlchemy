@@ -170,12 +170,13 @@ class IfxDialect_IfxPy(IfxDialect):
             return ((dsn, uid, pwd, '', ''), {})
         else:
             # Full URL string support for connection to remote data servers
-            dsn_param = ['DRIVER={IBM INFORMIX ODBC DRIVER (64-bit)}']
+            # dsn_param = ['DRIVER={IBM INFORMIX ODBC DRIVER (64-bit)}']
+            dsn_param = ['']
             dsn_param.append('DATABASE=%s' % url.database)
-            dsn_param.append('HOSTNAME=%s' % url.host)
-            dsn_param.append('PROTOCOL=TCPIP')
+            dsn_param.append('HOST=%s' % url.host)
+            # dsn_param.append('PROTOCOL=TCPIP')
             if url.port:
-                dsn_param.append('PORT=%s' % url.port)
+                dsn_param.append('SERVICE=%s' % url.port)
             if url.username:
                 dsn_param.append('UID=%s' % url.username)
             if url.password:

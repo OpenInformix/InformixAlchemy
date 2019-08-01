@@ -14,3 +14,10 @@ cd InformixAlchemy
 python  setup.py  build
 python  setup.py  install
 ```
+
+
+### Try
+```bash
+cd InformixAlchemy\scratchpad
+python test1.py
+```

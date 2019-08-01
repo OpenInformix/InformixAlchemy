@@ -166,3 +166,5 @@ try.*
 /tmp/**
 
 
+Sample*.py
+try*.py
