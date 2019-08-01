@@ -161,5 +161,8 @@ try/**
 tmp.*
 0
 1
+try.*
+/tmp
+/tmp/**
 
 
