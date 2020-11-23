@@ -1,5 +1,5 @@
 ### IfxAlchemy
-The InformixAlchemy adapter provides a SQLAlchemy interface to Informix database
+The InformixAlchemy adapter provides a SQLAlchemy (Ref: https://www.sqlalchemy.org/) interface to Informix database
 
 Please note that this project is still under active development. Please report any bugs in the issue tracker
 
