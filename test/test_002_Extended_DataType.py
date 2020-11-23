@@ -1,4 +1,3 @@
-# copy C:\work\IfxPy\IfxPy\IfxPyDbi.py C:\Dev\Anaconda3\lib\site-packages\ifxpy-3.0.3-py3.7-win-amd64.egg\IfxPyDbi.py
 
 from sqlalchemy import create_engine
 from sqlalchemy.dialects import registry
