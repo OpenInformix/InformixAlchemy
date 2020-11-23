@@ -1,0 +1,34 @@
+from sqlalchemy import create_engine
+from sqlalchemy.dialects import registry
+from sqlalchemy.orm import sessionmaker
+
+#import IfxPyDbi as dbapi2
+
+registry.register("informix",        "IfxAlchemy.IfxPy", "IfxDialect_IfxPy")
+registry.register("informix.IfxPy",  "IfxAlchemy.IfxPy", "IfxDialect_IfxPy")
+registry.register("informix.pyodbc", "IfxAlchemy.pyodbc", "IfxDialect_pyodbc")
+
+from sqlalchemy import MetaData, Table, Column, Integer
+
+ConStr = 'informix://<username>:<password>@<host name>:<port number>/<databasename>;SERVER=<server name>'
+engine = create_engine(ConStr)
+
+connection = engine.connect()
+
+connection.execute("drop table if exists employee");
+connection.execute("create table employee (id int, fname varchar(20), lname varchar(20), salary money, purchase DATE )")
+connection.execute("insert into employee values(1, 'Sheetal', 'J',  20100.19, 2019-02-02 )");
+result = connection.execute("select * from employee")
+
+
+for row in result:
+     print("id:", row[0])
+     print("fName:", row[1])
+     print("lname:", row[2])
+     print("Salary:", row[3])
+     print("Purchase:", row[4])
+
+#connection.execute("drop table employee");
+
+connection.close()
+print( "Done2" )
