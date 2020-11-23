@@ -13,10 +13,19 @@
 # | KIND, either express or implied. See the License for the specific        |
 # | language governing permissions and limitations under the License.        |
 # +--------------------------------------------------------------------------+
+# |                                                                          | 
+# | Authors: Sathyanesh Krishnan, Shilpa S Jadhav, Tim Powell                |       
+# |                                                                          |
+# +--------------------------------------------------------------------------+
+# ///////////////////////////////////////////////////////////////////////////
+# +--------------------------------------------------------------------------+
+# |                                                                          |
 # | Authors: Alex Pitigoi, Abhigyan Agrawal, Rahul Priyadarshi,Abhinav Radke |
 # | Contributors: Jaimy Azle, Mike Bayer,Hemlata Bhatt                       |
 # +--------------------------------------------------------------------------+
 
+
+import re
 from .base import IfxExecutionContext, IfxDialect
 from sqlalchemy import processors, types as sa_types, util
 from sqlalchemy import __version__ as SA_Version
@@ -27,6 +36,8 @@ SQL_TXN_READ_COMMITTED = 2
 SQL_TXN_REPEATABLE_READ = 4
 SQL_TXN_SERIALIZABLE = 8
 SQL_ATTR_TXN_ISOLATION = 108
+
+VERSION_RE = re.compile(r'(\d+)\.(\d+)(.+\d+)')
 
 if SA_Version < [0, 8]:
     from sqlalchemy.engine import base
@@ -45,17 +56,11 @@ class IfxExecutionContext_IfxPy(IfxExecutionContext):
     _callproc_result = None
     _out_parameters = None
 
+    #def get_lastrowid(self):
+    #    return self.cursor.last_identity_val
+
     def get_lastrowid(self):
-        return self.cursor.last_identity_val
-
-
-    def pre_exec(self):
-        # if a single execute, check for outparams
-        if len(self.compiled_parameters) == 1:
-            for bindparam in self.compiled.binds.values():
-                if bindparam.isoutparam:
-                    self._out_parameters = True
-                    break
+        return self._lastrowid
 
     def get_result_proxy(self):
         if self._callproc_result and self._out_parameters:
@@ -111,8 +116,6 @@ class IfxDialect_IfxPy(IfxDialect):
         else:
             cursor.execute(statement, parameters)
 
-    def _get_server_version_info(self, connection):
-        return connection.connection.server_info()
 
     _isolation_lookup = set(['READ STABILITY','RS', 'UNCOMMITTED READ','UR',
                              'CURSOR STABILITY','CS', 'REPEATABLE READ','RR'])
@@ -143,64 +146,38 @@ class IfxDialect_IfxPy(IfxDialect):
         attrib = {SQL_ATTR_TXN_ISOLATION:_get_cli_isolation_levels(self,level)}
         res = connection.set_option(attrib)
 
-
-    def get_isolation_level(self, connection):
-
-        attrib = SQL_ATTR_TXN_ISOLATION
-        res = connection.get_option(attrib)
-
-        val = self._isolation_levels_returned[res]
-        return val
-
     def reset_isolation_level(self, connection):
         self.set_isolation_level(connection,'CS')
 
     def create_connect_args(self, url):
-        # DSN support through ODBC configuration ,
-        # while 2 connection attributes are mandatory: database alias
-        # and UID (in support to current schema), all the other
-        # connection attributes (protocol, hostname, servicename) are
-        # provided through sqlhost entry. Example
-        # 1: IfxAlchemy:///<database_alias>?UID=dbinst1 or Example 2:
-        # IfxAlchemy:///?DSN=<database_alias>;UID=dbinst1
-        if not url.host:
-            dsn = url.database
-            uid = url.username
-            pwd = url.password
-            return ((dsn, uid, pwd, '', ''), {})
-        else:
-            # Full URL string support for connection to remote data servers
-            # dsn_param = ['DRIVER={IBM INFORMIX ODBC DRIVER (64-bit)}']
-            dsn_param = ['']
-            dsn_param.append('DATABASE=%s' % url.database)
-            dsn_param.append('HOST=%s' % url.host)
-            # dsn_param.append('PROTOCOL=TCPIP')
-            if url.port:
-                dsn_param.append('SERVICE=%s' % url.port)
-            if url.username:
-                dsn_param.append('UID=%s' % url.username)
-            if url.password:
-                if ';' in url.password:
-                    url.password=(url.password).partition(";")[0]
-                dsn_param.append('PWD=%s' % url.password)
+        opts = url.translate_connect_args(username='uid', password='pwd',
+                host='server', port='service') # Are these safe renames?
+        connstr = ";".join(['%s=%s' % (k.upper(), v) for k, v in opts.items()])
+        opt = {}
 
-            #check for SSL arguments
-            ssl_keys = ['Security', 'SSLClientKeystoredb', 'SSLClientKeystash','SSLServerCertificate']
-            query_keys = url.query.keys()
-            for key in ssl_keys:
-                for query_key in query_keys:
-                    if query_key.lower() == key.lower():
-                        dsn_param.append('%(ssl_key)s=%(value)s' % {'ssl_key': key, 'value': url.query[query_key]})
-                        del url.query[query_key]
-                        break
+        return ([connstr], opt)
 
-            dsn = ';'.join(dsn_param)
-            dsn += ';'
-            return ((dsn, url.username, '', '', ''), {})
+        #check for SSL arguments
+        ssl_keys = ['Security', 'SSLClientKeystoredb', 'SSLClientKeystash','SSLServerCertificate']
+        query_keys = url.query.keys()
+        for key in ssl_keys:
+             for query_key in query_keys:
+                 if query_key.lower() == key.lower():
+                     dsn_param.append('%(ssl_key)s=%(value)s' % {'ssl_key': key, 'value': url.query[query_key]})
+                     del url.query[query_key]
+                     break
+
+        dsn = ';'.join(dsn_param)
+        dsn += ';'
+        return ((dsn, url.username, '', '', ''), {})
 
     # Retrieves current schema for the specified connection object
     def _get_default_schema_name(self, connection):
         return self.normalize_name(connection.connection.get_current_schema())
+
+    def _get_server_version_info(self, connection):
+        v = VERSION_RE.split(connection.connection.dbms_ver)
+        return (int(v[1]), int(v[2]), v[3])
 
 
     # Checks if the DB_API driver error indicates an invalid connection
