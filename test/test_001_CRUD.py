@@ -18,6 +18,8 @@ connection = engine.connect()
 connection.execute("drop table if exists employee");
 connection.execute("create table employee (id int, fname varchar(20), lname varchar(20), salary money, purchase DATE )")
 connection.execute("insert into employee values(1, 'Sheetal', 'J',  20100.19, 2019-02-02 )");
+connection.execute("insert into employee values(2, 'Joe', 'T',  20111.19, 2019-11-023 )");
+connection.execute("update employee set id=200 where id=2 ");
 result = connection.execute("select * from employee")
 
 
