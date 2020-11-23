@@ -150,34 +150,6 @@ class IfxDialect_IfxPy(IfxDialect):
         self.set_isolation_level(connection,'CS')
 
     def create_connect_args(self, url):
-        # DSN support through ODBC configuration ,
-        # while 2 connection attributes are mandatory: database alias
-        # and UID (in support to current schema), all the other
-        # connection attributes (protocol, hostname, servicename) are
-        # provided through sqlhost entry. Example
-        # 1: IfxAlchemy:///<database_alias>?UID=dbinst1 or Example 2:
-        # IfxAlchemy:///?DSN=<database_alias>;UID=dbinst1
-        #if not url.host:
-        #    dsn = url.database
-        #    uid = url.username
-        #    pwd = url.password
-        #    return ((dsn, uid, pwd, '', ''), {})
-        #else:
-            # Full URL string support for connection to remote data servers
-            # dsn_param = ['DRIVER={IBM INFORMIX ODBC DRIVER (64-bit)}']
-        #    dsn_param = ['']
-        #    dsn_param.append('DATABASE=%s' % url.database)
-        #    dsn_param.append('HOST=%s' % url.host)
-            # dsn_param.append('PROTOCOL=TCPIP')
-        #    if url.port:
-        #        dsn_param.append('SERVICE=%s' % url.port)
-        #    if url.username:
-        #        dsn_param.append('UID=%s' % url.username)
-        #    if url.password:
-        #        if ';' in url.password:
-        #            url.password=(url.password).partition(";")[0]
-        #        dsn_param.append('PWD=%s' % url.password)
-
         opts = url.translate_connect_args(username='uid', password='pwd',
                 host='server', port='service') # Are these safe renames?
         connstr = ";".join(['%s=%s' % (k.upper(), v) for k, v in opts.items()])
@@ -204,7 +176,6 @@ class IfxDialect_IfxPy(IfxDialect):
         return self.normalize_name(connection.connection.get_current_schema())
 
     def _get_server_version_info(self, connection):
-        #return connection.connection.server_info()[1]
         v = VERSION_RE.split(connection.connection.dbms_ver)
         return (int(v[1]), int(v[2]), v[3])
 
