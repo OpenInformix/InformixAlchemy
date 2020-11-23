@@ -3,8 +3,8 @@ The InformixAlchemy adapter provides a SQLAlchemy interface to Informix database
 
 Please note that this project is still under active development. Please report any bugs in the issue tracker
 
-Example:
-
+### Example:
+```
 from sqlalchemy import create_engine
 from sqlalchemy.dialects import registry
 from sqlalchemy.orm import sessionmaker
@@ -19,10 +19,9 @@ from sqlalchemy import MetaData, Table, Column, Integer
 
 ConStr = 'informix://<username>:<password>@<machine name>:<port number>/<database name>;SERVER=<server name>'
 engine = create_engine(ConStr)
-
 connection = engine.connect()
 
-connection.execute("drop table if exists employee");
+connection.execute("drop table if exists employee")
 connection.execute("create table employee (id int, fname varchar(20), lname varchar(20), salary money, purchase DATE )")
 connection.execute("insert into employee values(1, 'Sheetal', 'J',  20100.19, 2019-02-02 )")
 connection.execute("insert into employee values(2, 'Joe', 'T',  20111.19, 2019-11-023 )")
@@ -39,7 +38,7 @@ for row in result:
 
 connection.close()
 print( "Done2" )
-
+```
 
 ### Current state 
 Ready for use
