@@ -13,6 +13,12 @@
 # | KIND, either express or implied. See the License for the specific        |
 # | language governing permissions and limitations under the License.        |
 # +--------------------------------------------------------------------------+
+# |                                                                          |
+# | Authors: Sathyanesh Krishnan, Shilpa S Jadhav                            |
+# |                                                                          |
+# +--------------------------------------------------------------------------+
+# ///////////////////////////////////////////////////////////////////////////
+# +--------------------------------------------------------------------------+
 # | Authors: Alex Pitigoi, Abhigyan Agrawal, Rahul Priyadarshi               |
 # | Contributors: Jaimy Azle, Mike Bayer                                     |
 # +--------------------------------------------------------------------------+
@@ -355,7 +361,7 @@ class IfxCompiler(compiler.SQLCompiler):
             sql_sec = ""
             sql_sec = " \nFROM %s " % ( sql_split[1] )
 
-            dummyVal = "Z.__db2_"
+            dummyVal = "Z.__Ifx_"
             sql_pri = ""
 
             sql_sel = "SELECT "
@@ -417,7 +423,7 @@ class IfxCompiler(compiler.SQLCompiler):
             return "CHAR_LENGTH(%s, %s)" % (self.function_argspec(func, **kwargs), 'OCTETS')
         else:
             return compiler.SQLCompiler.visit_function(self, func, **kwargs)
-    # TODO: this is wrong but need to know what DB2 is expecting here
+    # TODO: this is wrong but need to know what Informix is expecting here
     #    if func.name.upper() == "LENGTH":
     #        return "LENGTH('%s')" % func.compile().params[func.name + '_1']
     #    else:
@@ -475,20 +481,20 @@ class IfxCompiler(compiler.SQLCompiler):
 class IfxDDLCompiler(compiler.DDLCompiler):
 
     def get_server_version_info(self, dialect):
-        """Returns the DB2 server major and minor version as a list of ints."""
+        """Returns the Informix server major and minor version as a list of ints."""
         if hasattr(dialect, 'dbms_ver'):
             return [int(ver_token) for ver_token in dialect.dbms_ver.split('.')[0:2]]
         else:
             return []
 
     def _is_nullable_unique_constraint_supported(self, dialect):
-        """Checks to see if the DB2 version is at least 10.5.
+        """Checks to see if the Informix version is at least 10.5.
         This is needed for checking if unique constraints with null columns are supported.
         """
 
         dbms_name = getattr(dialect, 'dbms_name', None)
         if hasattr(dialect, 'dbms_name'):
-           if dbms_name != None and (dbms_name.find('DB2/') != -1):
+           if dbms_name != None and (dbms_name.find('Informix/') != -1):
                 return self.get_server_version_info(dialect) >= [10, 5]
         else:
             return False
@@ -523,7 +529,7 @@ class IfxDDLCompiler(compiler.DDLCompiler):
 
         if constraint.onupdate is not None:
             util.warn(
-                "DB2 does not support UPDATE CASCADE for foreign keys.")
+                "Informix does not support UPDATE CASCADE for foreign keys.")
 
         return text
 
@@ -689,7 +695,7 @@ class IfxDialect(default.DefaultDialect):
         self._reflector = self._reflector_cls(self)
 
     # reflection: these all defer to an BaseIfxReflector
-    # object which selects between DB2 and AS/400 schemas
+    # object which selects between Informix and AS/400 schemas
     def initialize(self, connection):
         super(IfxDialect, self).initialize(connection)
         self.dbms_ver = getattr(connection.connection, 'dbms_ver', None)
