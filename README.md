@@ -3,6 +3,24 @@ The InformixAlchemy adapter provides a SQLAlchemy (Ref: https://www.sqlalchemy.o
 
 Please note that this project is still under active development. Please report any bugs in the issue tracker
 
+### Current state 
+Ready for use
+
+### To install Informix Alchemy from source
+```bash
+# Standard Infomrix Python setup should be used (Ref: https://github.com/OpenInformix/IfxPy/blob/master/README.md )
+cd InformixAlchemy
+# rm -rf build 
+python  setup.py  build
+python  setup.py  install
+```
+
+### Try
+```bash
+cd InformixAlchemy\scratchpad
+python test1.py
+```
+
 ### Example:
 ```
 from sqlalchemy import create_engine
@@ -40,22 +58,4 @@ connection.close()
 print( "Done2" )
 ```
 
-### Current state 
-Ready for use
 
-
-### To install Informix Alchemy from source
-```bash
-# Standard Python setup should be used
-cd InformixAlchemy
-# rm -rf build 
-
-python  setup.py  build
-python  setup.py  install
-```
-
-### Try
-```bash
-cd InformixAlchemy\scratchpad
-python test1.py
-```
