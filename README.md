@@ -9,6 +9,7 @@ Ready for use
 ### To install Informix Alchemy from source
 ```bash
 # Standard Infomrix Python setup should be used (Ref: https://github.com/OpenInformix/IfxPy/blob/master/README.md )
+git clone https://github.com/OpenInformix/InformixAlchemy.git
 cd InformixAlchemy
 # rm -rf build 
 python  setup.py  build
