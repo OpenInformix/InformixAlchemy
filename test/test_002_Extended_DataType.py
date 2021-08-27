@@ -12,7 +12,7 @@ import IfxAlchemy.IfxPy
 import IfxAlchemy.pyodbc
 
 
-ConStr = 'informix://username:passwd@<machinename>:PortNo/database;SERVER=<server name>'
+ConStr = 'informix://<username>:<password>@<host name>:<port number>/<databasename>;SERVER=<server name>'
 engine = create_engine(ConStr)
 
 connection = engine.connect()
