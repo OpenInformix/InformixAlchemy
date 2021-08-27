@@ -11,8 +11,8 @@ registry.register("informix.pyodbc", "IfxAlchemy.pyodbc", "IfxDialect_pyodbc")
 import IfxAlchemy.IfxPy
 import IfxAlchemy.pyodbc
 
-#ConStr = "SERVER=ol_informix1410_3;DATABASE=sqlal_test;HOST=njdc-ldev11.prod.hclpnp.com;SERVICE=8572;UID=informix;PWD=2wo4D8QA;"
-ConStr = 'informix://informix:2wo4D8QA@njdc-ldev11.prod.hclpnp.com:8572/sqlal_test;SERVER=ol_informix1410_3'
+
+ConStr = 'informix://username:passwd@<machinename>:PortNo/database;SERVER=<server name>'
 engine = create_engine(ConStr)
 
 connection = engine.connect()
