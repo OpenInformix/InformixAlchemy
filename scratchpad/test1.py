@@ -17,7 +17,7 @@ engine = create_engine(ConStr)
 connection = engine.connect()
 connection.execute('drop table if exists t1911')
 connection.execute('create table t1911(c1 int, c2 char(20), c3 float, c4 varchar(10))')
-connection.execute('insert into t1911 values(1, "Sheetal", 12.01, "Hello")')
+connection.execute("insert into t1911 values(1, 'Sheetal', 12.01, 'Hello')")
 result = connection.execute('select * from  t1911')
 
 for row in result:
